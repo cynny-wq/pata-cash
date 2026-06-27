@@ -5,6 +5,7 @@ import {
   getDocs,
   serverTimestamp,
   updateDoc,
+  deleteDoc,
   doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const saveBtn = document.getElementById("saveBtn");
@@ -108,12 +109,14 @@ async function loadInvoices() {
         : "<span style='color:orange;font-weight:bold;'>🟡 Pending</span>"
     }
 </td>
-                    <td>
+        <td>
     ${
         invoice.status === "Pending"
-        ? `<button onclick="markPaid('${doc.id}')">Mark Paid</button>`
+        ? `<button onclick="markPaid('${doc.id}')">✅ Mark Paid</button><br><br>`
         : `✅ Paid`
     }
+
+    <button onclick="deleteInvoice('${doc.id}')">🗑 Delete</button>
 </td>
                 </tr>
             `;
@@ -148,6 +151,32 @@ async function markPaid(id) {
 
 }
 window.markPaid = markPaid;
+window.deleteInvoice = deleteInvoice;
+async function deleteInvoice(id) {
+
+    const confirmDelete = confirm("Delete this invoice?");
+
+    if (!confirmDelete) return;
+
+    try {
+
+        await deleteDoc(doc(db, "invoices", id));
+
+        await loadInvoices();
+        await updateDashboard();
+
+        alert("Invoice deleted successfully.");
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Failed to delete invoice.");
+
+    }
+
+}
+
 async function updateDashboard() {
 
     const snapshot = await getDocs(collection(db, "invoices"));
