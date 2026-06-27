@@ -1,5 +1,5 @@
 import { db } from "./firebase.js";
-
+loadInvoices();
 import {
   collection,
   addDoc,
@@ -49,6 +49,7 @@ async function saveInvoice() {
         });
 
         alert("✅ Invoice saved successfully!");
+        await loadInvoices();
 
         document.getElementById("customerName").value = "";
 
@@ -65,5 +66,52 @@ async function saveInvoice() {
         alert("Error saving invoice.");
 
     }
+    async function loadInvoices() {
+
+    const table = document.getElementById("invoiceTable");
+
+    table.innerHTML = "";
+
+    const querySnapshot = await getDocs(collection(db, "invoices"));
+
+    if (querySnapshot.empty) {
+
+        table.innerHTML = `
+        <tr>
+            <td colspan="6" style="text-align:center;">
+                No invoices found
+            </td>
+        </tr>
+        `;
+
+        return;
+    }
+
+    querySnapshot.forEach((doc) => {
+
+        const invoice = doc.data();
+
+        table.innerHTML += `
+            <tr>
+                <td>${invoice.customerName}</td>
+                <td>${invoice.customerPhone}</td>
+                <td>KES ${invoice.amount}</td>
+                <td>${invoice.dueDate}</td>
+                <td>${invoice.status}</td>
+                <td>
+                    <button disabled>Edit</button>
+                </td>
+            </tr>
+        `;
+
+    });
 
 }
+
+}
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
