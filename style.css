@@ -156,3 +156,56 @@ td{
     font-weight:bold;
     text-align:center;
 }
+/* =========================
+   Action Buttons
+========================= */
+
+.action-buttons{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.action-buttons button{
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+    color:white;
+}
+
+/* Mark Paid */
+.btn-paid{
+    background:#22c55e;
+}
+
+.btn-paid:hover{
+    background:#16a34a;
+}
+
+/* Edit */
+.btn-edit{
+    background:#3b82f6;
+}
+
+.btn-edit:hover{
+    background:#2563eb;
+}
+
+/* Delete */
+.btn-delete{
+    background:#ef4444;
+}
+
+.btn-delete:hover{
+    background:#dc2626;
+}
+
+.paid-label{
+    color:#16a34a;
+    font-weight:bold;
+    text-align:center;
+}

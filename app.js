@@ -110,13 +110,23 @@ async function loadInvoices() {
     }
 </td>
         <td>
-    ${
-        invoice.status === "Pending"
-        ? `<button onclick="markPaid('${doc.id}')">✅ Mark Paid</button><br><br>`
-        : `✅ Paid`
-    }
+    <div class="action-buttons">
 
-    <button onclick="deleteInvoice('${doc.id}')">🗑 Delete</button>
+        ${
+            invoice.status === "Pending"
+            ? `<button class="btn-paid" onclick="markPaid('${doc.id}')">✅ Mark Paid</button>`
+            : `<span class="paid-label">✅ Paid</span>`
+        }
+
+        <button class="btn-edit" onclick="editInvoice('${doc.id}')">
+            ✏️ Edit
+        </button>
+
+        <button class="btn-delete" onclick="deleteInvoice('${doc.id}')">
+            🗑 Delete
+        </button>
+
+    </div>
 </td>
                 </tr>
             `;
@@ -152,6 +162,7 @@ async function markPaid(id) {
 }
 window.markPaid = markPaid;
 window.deleteInvoice = deleteInvoice;
+window.editInvoice = editInvoice;
 async function deleteInvoice(id) {
 
     const confirmDelete = confirm("Delete this invoice?");
@@ -210,3 +221,8 @@ async function updateDashboard() {
         `KES ${collected.toLocaleString()}`;
 
 }
+function editInvoice(id) {
+    alert("Edit feature coming next!\nInvoice ID: " + id);
+}
+
+window.editInvoice = editInvoice;
