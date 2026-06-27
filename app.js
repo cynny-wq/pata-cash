@@ -13,6 +13,7 @@ saveBtn.addEventListener("click", saveInvoice);
 
 // Load invoices when page opens
 loadInvoices();
+updateDashboard();
 
 // ==========================
 // SAVE INVOICE
@@ -50,6 +51,7 @@ async function saveInvoice() {
         document.getElementById("dueDate").value = "";
 
         await loadInvoices();
+        await updateDashboard();
 
     } catch (error) {
 
@@ -113,5 +115,38 @@ async function loadInvoices() {
         console.error(error);
 
     }
+
+}
+async function updateDashboard() {
+
+    const snapshot = await getDocs(collection(db, "invoices"));
+
+    let total = 0;
+    let pending = 0;
+    let paid = 0;
+    let collected = 0;
+
+    snapshot.forEach((doc) => {
+
+        const invoice = doc.data();
+
+        total++;
+
+        if (invoice.status === "Pending") {
+            pending++;
+        }
+
+        if (invoice.status === "Paid") {
+            paid++;
+            collected += Number(invoice.amount);
+        }
+
+    });
+
+    document.getElementById("totalInvoices").textContent = total;
+    document.getElementById("pendingInvoices").textContent = pending;
+    document.getElementById("paidInvoices").textContent = paid;
+    document.getElementById("totalCollected").textContent =
+        `KES ${collected.toLocaleString()}`;
 
 }
