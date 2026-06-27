@@ -12,7 +12,11 @@ import {
 const saveBtn = document.getElementById("saveBtn");
 const updateBtn = document.getElementById("updateBtn");
 let currentInvoiceId = null;
+let invoices = [];
 saveBtn.addEventListener("click", saveInvoice);
+document
+    .getElementById("searchInput")
+    .addEventListener("keyup", searchInvoices);
 updateBtn.addEventListener("click", updateInvoice);
 
 // Load invoices when page opens
@@ -69,78 +73,70 @@ async function saveInvoice() {
 // ==========================
 // LOAD INVOICES
 // ==========================
-async function loadInvoices() {
+function displayInvoices(list) {
 
     const table = document.getElementById("invoiceTable");
 
-    if (!table) return;
-
     table.innerHTML = "";
 
-    try {
-
-        const querySnapshot = await getDocs(collection(db, "invoices"));
-
-        if (querySnapshot.empty) {
-
-            table.innerHTML = `
-                <tr>
-                    <td colspan="6" style="text-align:center;">
-                        No invoices found
-                    </td>
-                </tr>
-            `;
-
-            return;
-
-        }
-
-        querySnapshot.forEach((doc) => {
-
-            const invoice = doc.data();
-
-            table.innerHTML += `
-                <tr>
-                    <td>${invoice.customerName}</td>
-                    <td>${invoice.customerPhone}</td>
-                    <td>KES ${invoice.amount}</td>
-                    <td>${invoice.dueDate}</td>
-                    <td>
-    ${
-        invoice.status === "Paid"
-        ? "<span style='color:green;font-weight:bold;'>🟢 Paid</span>"
-        : "<span style='color:orange;font-weight:bold;'>🟡 Pending</span>"
+    if (list.length === 0) {
+        table.innerHTML = `
+        <tr>
+            <td colspan="6" style="text-align:center;">
+                No invoices found
+            </td>
+        </tr>
+        `;
+        return;
     }
-</td>
-        <td>
-    <div class="action-buttons">
 
-        ${
-            invoice.status === "Pending"
-            ? `<button class="btn-paid" onclick="markPaid('${doc.id}')">✅ Mark Paid</button>`
-            : `<span class="paid-label">✅ Paid</span>`
-        }
+    list.forEach((invoice) => {
 
-        <button class="btn-edit" onclick="editInvoice('${doc.id}')">
-            ✏️ Edit
-        </button>
+        table.innerHTML += `
+        <tr>
 
-        <button class="btn-delete" onclick="deleteInvoice('${doc.id}')">
-            🗑 Delete
-        </button>
+            <td>${invoice.customerName}</td>
 
-    </div>
-</td>
-                </tr>
-            `;
+            <td>${invoice.customerPhone}</td>
 
-        });
+            <td>KES ${invoice.amount}</td>
 
-    } catch (error) {
+            <td>${invoice.dueDate}</td>
 
-        console.error(error);
+            <td>
+                ${
+                    invoice.status === "Paid"
+                    ? "<span style='color:green;font-weight:bold;'>🟢 Paid</span>"
+                    : "<span style='color:orange;font-weight:bold;'>🟡 Pending</span>"
+                }
+            </td>
 
-    }
+            <td>
+
+                <div class="action-buttons">
+
+                    ${
+                        invoice.status === "Pending"
+                        ? `<button class="btn-paid" onclick="markPaid('${invoice.id}')">✅ Mark Paid</button>`
+                        : `<span class="paid-label">✅ Paid</span>`
+                    }
+
+                    <button class="btn-edit" onclick="editInvoice('${invoice.id}')">
+                        ✏️ Edit
+                    </button>
+
+                    <button class="btn-delete" onclick="deleteInvoice('${invoice.id}')">
+                        🗑 Delete
+                    </button>
+
+                </div>
+
+            </td>
+
+        </tr>
+        `;
+
+    });
 
 }
 async function markPaid(id) {
@@ -277,5 +273,23 @@ async function updateInvoice(){
 
     await loadInvoices();
     await updateDashboard();
+
+}
+function searchInvoices() {
+
+    const keyword = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+    const filtered = invoices.filter(invoice =>
+
+        invoice.customerName.toLowerCase().includes(keyword) ||
+
+        invoice.customerPhone.includes(keyword)
+
+    );
+
+    displayInvoices(filtered);
 
 }
