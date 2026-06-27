@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PataCash</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+
+<h1>💚 PataCash</h1>
+
+<p>Smart Invoice & Debt Tracker</p>
+
+</header>
+
+<section class="stats">
+
+<div class="card">
+<h2 id="totalInvoices">0</h2>
+<p>Total Invoices</p>
+</div>
+
+<div class="card">
+<h2 id="pendingInvoices">0</h2>
+<p>Pending</p>
+</div>
+
+<div class="card">
+<h2 id="paidInvoices">0</h2>
+<p>Paid</p>
+</div>
+
+<div class="card">
+<h2 id="totalCollected">KES 0</h2>
+<p>Collected</p>
+</div>
+
+</section>
+
+<section class="invoice-form">
+
+<h2>New Invoice</h2>
+
+<input
+type="text"
+id="customerName"
+placeholder="Customer Name">
+
+<input
+type="text"
+id="customerPhone"
+placeholder="254712345678">
+
+<input
+type="number"
+id="invoiceAmount"
+placeholder="Amount">
+
+<input
+type="date"
+id="dueDate">
+
+<button id="saveBtn">
+Save Invoice
+</button>
+
+</section>
+
+<section class="invoice-list">
+
+<input
+type="text"
+id="searchInput"
+placeholder="🔍 Search invoices...">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Customer</th>
+
+<th>Phone</th>
+
+<th>Amount</th>
+
+<th>Due</th>
+
+<th>Status</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="invoiceTable">
+
+<tr>
+
+<td colspan="6" style="text-align:center;padding:40px;">
+No invoices yet
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+</div>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
