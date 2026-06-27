@@ -1,12 +1,12 @@
 import { db } from "./firebase.js";
-
 import {
   collection,
   addDoc,
   getDocs,
-  serverTimestamp
+  serverTimestamp,
+  updateDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 const saveBtn = document.getElementById("saveBtn");
 
 saveBtn.addEventListener("click", saveInvoice);
@@ -101,10 +101,20 @@ async function loadInvoices() {
                     <td>${invoice.customerPhone}</td>
                     <td>KES ${invoice.amount}</td>
                     <td>${invoice.dueDate}</td>
-                    <td>${invoice.status}</td>
                     <td>
-                        <button disabled>Edit</button>
-                    </td>
+    ${
+        invoice.status === "Paid"
+        ? "<span style='color:green;font-weight:bold;'>🟢 Paid</span>"
+        : "<span style='color:orange;font-weight:bold;'>🟡 Pending</span>"
+    }
+</td>
+                    <td>
+    ${
+        invoice.status === "Pending"
+        ? `<button onclick="markPaid('${doc.id}')">Mark Paid</button>`
+        : `✅ Paid`
+    }
+</td>
                 </tr>
             `;
 
@@ -117,6 +127,27 @@ async function loadInvoices() {
     }
 
 }
+async function markPaid(id) {
+
+    try {
+
+        await updateDoc(doc(db, "invoices", id), {
+
+            status: "Paid"
+
+        });
+
+        await loadInvoices();
+        await updateDashboard();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+window.markPaid = markPaid;
 async function updateDashboard() {
 
     const snapshot = await getDocs(collection(db, "invoices"));
