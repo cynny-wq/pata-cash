@@ -3,14 +3,17 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,
   serverTimestamp,
   updateDoc,
   deleteDoc,
   doc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const saveBtn = document.getElementById("saveBtn");
-
+const updateBtn = document.getElementById("updateBtn");
+let currentInvoiceId = null;
 saveBtn.addEventListener("click", saveInvoice);
+updateBtn.addEventListener("click", updateInvoice);
 
 // Load invoices when page opens
 loadInvoices();
@@ -221,8 +224,58 @@ async function updateDashboard() {
         `KES ${collected.toLocaleString()}`;
 
 }
-function editInvoice(id) {
-    alert("Edit feature coming next!\nInvoice ID: " + id);
-}
+async function editInvoice(id){
 
-window.editInvoice = editInvoice;
+    const docRef = doc(db, "invoices", id);
+
+    const docSnap = await getDoc(docRef);
+
+    if(docSnap.exists()){
+
+        const invoice = docSnap.data();
+
+        document.getElementById("customerName").value = invoice.customerName;
+        document.getElementById("customerPhone").value = invoice.customerPhone;
+        document.getElementById("invoiceAmount").value = invoice.amount;
+        document.getElementById("dueDate").value = invoice.dueDate;
+
+        currentInvoiceId = id;
+
+        saveBtn.style.display = "none";
+        updateBtn.style.display = "block";
+
+    }
+
+}
+async function updateInvoice(){
+
+    if(!currentInvoiceId) return;
+
+    await updateDoc(doc(db,"invoices",currentInvoiceId),{
+
+        customerName:document.getElementById("customerName").value,
+
+        customerPhone:document.getElementById("customerPhone").value,
+
+        amount:Number(document.getElementById("invoiceAmount").value),
+
+        dueDate:document.getElementById("dueDate").value
+
+    });
+
+    alert("✅ Invoice updated!");
+
+    currentInvoiceId = null;
+
+    saveBtn.style.display="block";
+    updateBtn.style.display="none";
+
+    document.getElementById("customerName").value="";
+    document.getElementById("customerPhone").value="";
+    document.getElementById("invoiceAmount").value="";
+    document.getElementById("dueDate").value="";
+
+    await loadInvoices();
+    await updateDashboard();
+
+}
