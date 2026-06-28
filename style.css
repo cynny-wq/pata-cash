@@ -209,3 +209,97 @@ td{
     font-weight:bold;
     text-align:center;
 }
+/* =========================
+   MOBILE RESPONSIVE FIX
+========================= */
+
+@media (max-width: 768px) {
+
+  .container {
+    padding: 15px;
+  }
+
+  /* Make dashboard cards stack */
+  .stats {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  /* Invoice form */
+  .invoice-form {
+    padding: 15px;
+  }
+
+  input, button {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  /* Table fix */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th, td {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  /* Action buttons stack */
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-paid,
+  .btn-edit,
+  .btn-delete {
+    width: 100%;
+  }
+
+  /* Header text */
+  h1 {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+}
+/* =========================
+   FIX TABLE ACTION BUTTONS
+========================= */
+
+td button {
+  margin: 3px 0;
+}
+
+@media (min-width: 769px) {
+  td button {
+    display: inline-block;
+    width: auto;
+    margin-right: 5px;
+  }
+}
+.btn-whatsapp{
+    background:#25D366;
+    color:white;
+    border:none;
+}
+
+.btn-whatsapp:hover{
+    background:#1ebe5d;
+}
+.btn-pdf{
+    background:#6366f1;
+    color:white;
+    border:none;
+}
+
+.btn-pdf:hover{
+    background:#4f46e5;
+}

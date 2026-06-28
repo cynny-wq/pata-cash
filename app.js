@@ -20,9 +20,47 @@ document
 updateBtn.addEventListener("click", updateInvoice);
 
 // Load invoices when page opens
-loadInvoices();
-updateDashboard();
+loadInvoices()
 
+updateDashboard();
+async function loadInvoices() {
+
+    const table = document.getElementById("invoiceTable");
+
+    try {
+
+        const querySnapshot = await getDocs(collection(db, "invoices"));
+
+        invoices = [];
+
+        querySnapshot.forEach((doc) => {
+
+            invoices.push({
+                id: doc.id,
+                ...doc.data()
+            });
+
+        });
+
+        console.log("Loaded invoices:", invoices);
+
+        displayInvoices(invoices);
+
+        await updateDashboard();
+
+    } catch (error) {
+
+        console.error("Load error:", error);
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center;">
+                    Error loading invoices
+                </td>
+            </tr>
+        `;
+    }
+}
 // ==========================
 // SAVE INVOICE
 // ==========================
@@ -128,7 +166,12 @@ function displayInvoices(list) {
                     <button class="btn-delete" onclick="deleteInvoice('${invoice.id}')">
                         🗑 Delete
                     </button>
-
+                    <button class="btn-whatsapp" onclick="sendWhatsApp('${invoice.id}')">
+                    📱 WhatsApp
+                     </button>
+                     <button class="btn-pdf" onclick="downloadPDF('${invoice.id}')">
+                     📄 PDF
+                     </button>
                 </div>
 
             </td>
@@ -293,3 +336,59 @@ function searchInvoices() {
     displayInvoices(filtered);
 
 }
+async function sendWhatsApp(id) {
+
+    const docSnap = await getDoc(doc(db, "invoices", id));
+
+    if (!docSnap.exists()) return;
+
+    const invoice = docSnap.data();
+
+    const message =
+`Hello ${invoice.customerName},
+
+This is a friendly reminder from PataCash.
+
+Your invoice of KES ${invoice.amount} is due on ${invoice.dueDate}.
+
+Kindly make your payment.
+
+Thank you!`;
+
+    const phone = invoice.customerPhone.replace("+", "");
+
+    const url =
+`https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+    window.open(url, "_blank");
+}
+window.sendWhatsApp = sendWhatsApp;
+async function downloadPDF(id) {
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF();
+
+    const docSnap = await getDoc(doc(db, "invoices", id));
+
+    if (!docSnap.exists()) return;
+
+    const invoice = docSnap.data();
+
+    pdf.setFontSize(20);
+    pdf.text("PataCash Invoice", 20, 20);
+
+    pdf.setFontSize(12);
+
+    pdf.text(`Customer: ${invoice.customerName}`, 20, 40);
+    pdf.text(`Phone: ${invoice.customerPhone}`, 20, 50);
+    pdf.text(`Amount: KES ${invoice.amount}`, 20, 60);
+    pdf.text(`Due Date: ${invoice.dueDate}`, 20, 70);
+    pdf.text(`Status: ${invoice.status}`, 20, 80);
+
+    pdf.text("Thank you for your business!", 20, 100);
+
+    pdf.save(`Invoice-${invoice.customerName}.pdf`);
+
+}
+window.downloadPDF = downloadPDF;
