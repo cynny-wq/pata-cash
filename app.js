@@ -343,7 +343,7 @@ async function sendWhatsApp(id) {
     if (!docSnap.exists()) return;
 
     const invoice = docSnap.data();
-
+    const invoiceNumber = id.substring(0, 6).toUpperCase();
     const message =
 `Hello ${invoice.customerName},
 
@@ -375,20 +375,48 @@ async function downloadPDF(id) {
 
     const invoice = docSnap.data();
 
-    pdf.setFontSize(20);
-    pdf.text("PataCash Invoice", 20, 20);
+    const invoiceNumber = id.substring(0, 6).toUpperCase();
 
+    // Title
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(22);
+    pdf.text("PATACASH", 20, 20);
+
+    pdf.setFontSize(15);
+    pdf.text("INVOICE", 20, 30);
+
+    // Divider
+    pdf.line(20, 35, 190, 35);
+
+    // Customer Details
+    pdf.setFont("helvetica", "normal");
     pdf.setFontSize(12);
 
-    pdf.text(`Customer: ${invoice.customerName}`, 20, 40);
-    pdf.text(`Phone: ${invoice.customerPhone}`, 20, 50);
-    pdf.text(`Amount: KES ${invoice.amount}`, 20, 60);
-    pdf.text(`Due Date: ${invoice.dueDate}`, 20, 70);
-    pdf.text(`Status: ${invoice.status}`, 20, 80);
+    pdf.text(`Invoice No: ${invoiceNumber}`, 20, 50);
+    pdf.text(`Customer: ${invoice.customerName}`, 20, 60);
+    pdf.text(`Phone: ${invoice.customerPhone}`, 20, 70);
 
-    pdf.text("Thank you for your business!", 20, 100);
+    pdf.text(`Amount: KES ${invoice.amount}`, 20, 90);
+    pdf.text(`Due Date: ${invoice.dueDate}`, 20, 100);
+    pdf.text(`Status: ${invoice.status}`, 20, 110);
 
-    pdf.save(`Invoice-${invoice.customerName}.pdf`);
+    // Divider
+    pdf.line(20, 120, 190, 120);
 
+    pdf.setFont("helvetica", "bold");
+    pdf.text("PAYMENT DETAILS", 20, 135);
+
+    pdf.setFont("helvetica", "normal");
+
+    pdf.text("M-PESA", 20, 145);
+    pdf.text("Paybill: 123456", 20, 155);
+    pdf.text(`Account: ${invoiceNumber}`, 20, 165);
+
+    pdf.line(20, 175, 190, 175);
+
+    pdf.setFont("helvetica", "italic");
+    pdf.text("Thank you for choosing PataCash.", 20, 190);
+
+    pdf.save(`Invoice-${invoiceNumber}.pdf`);
 }
 window.downloadPDF = downloadPDF;

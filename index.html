@@ -8,42 +8,44 @@
     <link rel="stylesheet" href="style.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
+<header class="header">
 
-<body>
+    <div class="logo">
 
-<div class="container">
+        💵 <span>PataCash</span>
 
-<header>
+    </div>
 
-<h1>💚 PataCash</h1>
-
-<p>Smart Invoice & Debt Tracker</p>
+    <p class="subtitle">
+        Smart Invoice & Debt Tracker
+    </p>
 
 </header>
 
 <section class="stats">
+<div class="dashboard">
 
-<div class="card">
-<h2 id="totalInvoices">0</h2>
-<p>Total Invoices</p>
+    <div class="card">
+        <h3>Total Invoices</h3>
+        <h2 id="totalInvoices">0</h2>
+    </div>
+
+    <div class="card">
+        <h3>Pending</h3>
+        <h2 id="pendingInvoices">0</h2>
+    </div>
+
+    <div class="card">
+        <h3>Paid</h3>
+        <h2 id="paidInvoices">0</h2>
+    </div>
+
+    <div class="card">
+        <h3>Collected</h3>
+        <h2 id="totalCollected">KES 0</h2>
+    </div>
+
 </div>
-
-<div class="card">
-<h2 id="pendingInvoices">0</h2>
-<p>Pending</p>
-</div>
-
-<div class="card">
-<h2 id="paidInvoices">0</h2>
-<p>Paid</p>
-</div>
-
-<div class="card">
-<h2 id="totalCollected">KES 0</h2>
-<p>Collected</p>
-</div>
-
 </section>
 
 <section class="invoice-form">
