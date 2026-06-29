@@ -1,4 +1,7 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
+import {
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   collection,
   addDoc,
@@ -7,10 +10,15 @@ import {
   serverTimestamp,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  query,
+  where,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const saveBtn = document.getElementById("saveBtn");
 const updateBtn = document.getElementById("updateBtn");
+const welcomeUser = document.getElementById("welcomeUser");
+const logoutBtn = document.getElementById("logoutBtn");
 let currentInvoiceId = null;
 let invoices = [];
 saveBtn.addEventListener("click", saveInvoice);
@@ -20,17 +28,35 @@ document
 updateBtn.addEventListener("click", updateInvoice);
 
 // Load invoices when page opens
-loadInvoices()
+window.addEventListener("userReady", async () => {
 
-updateDashboard();
+    welcomeUser.textContent =
+        `Welcome back, ${auth.currentUser.email}`;
+
+    await loadInvoices();
+
+    await updateDashboard();
+
+});
 async function loadInvoices() {
+
+    if (!auth.currentUser) {
+        console.log("User not logged in yet.");
+        return;
+    }
 
     const table = document.getElementById("invoiceTable");
 
+
     try {
 
-        const querySnapshot = await getDocs(collection(db, "invoices"));
+        const q = query(
+            collection(db, "invoices"),
+            where("uid", "==", auth.currentUser.uid),
+            orderBy("createdAt", "desc")
+        );
 
+        const querySnapshot = await getDocs(q);
         invoices = [];
 
         querySnapshot.forEach((doc) => {
@@ -77,18 +103,20 @@ async function saveInvoice() {
     }
 
     try {
+        const invoiceNumber = "INV-" + Date.now();
 
-        await addDoc(collection(db, "invoices"), {
+await addDoc(collection(db, "invoices"), {
 
-            customerName,
-            customerPhone,
-            amount: Number(amount),
-            dueDate,
-            status: "Pending",
-            createdAt: serverTimestamp()
+    invoiceNumber,
+    uid: auth.currentUser.uid,
+    customerName,
+    customerPhone,
+    amount: Number(amount),
+    dueDate,
+    status: "Pending",
+    createdAt: serverTimestamp()
 
-        });
-
+});
         alert("✅ Invoice saved successfully!");
 
         document.getElementById("customerName").value = "";
@@ -111,6 +139,14 @@ async function saveInvoice() {
 // ==========================
 // LOAD INVOICES
 // ==========================
+function isOverdue(invoice) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const due = new Date(invoice.dueDate);
+
+    return invoice.status === "Pending" && due < today;
+}
 function displayInvoices(list) {
 
     const table = document.getElementById("invoiceTable");
@@ -131,10 +167,10 @@ function displayInvoices(list) {
     list.forEach((invoice) => {
 
         table.innerHTML += `
-        <tr>
-
-            <td>${invoice.customerName}</td>
-
+        <tr style="${isOverdue(invoice) ? 'background-color:#ffe5e5;' : ''}">
+    <td>${invoice.invoiceNumber || invoice.id.substring(0,6)}</td>
+    
+    <td>${invoice.customerName}</td>
             <td>${invoice.customerPhone}</td>
 
             <td>KES ${invoice.amount}</td>
@@ -144,8 +180,10 @@ function displayInvoices(list) {
             <td>
                 ${
                     invoice.status === "Paid"
-                    ? "<span style='color:green;font-weight:bold;'>🟢 Paid</span>"
-                    : "<span style='color:orange;font-weight:bold;'>🟡 Pending</span>"
+? "<span class='status-paid'>🟢 Paid</span>"
+: isOverdue(invoice)
+    ? "<span class='status-overdue'>🔴 Overdue</span>"
+    : "<span class='status-pending'>🟡 Pending</span>"
                 }
             </td>
 
@@ -198,7 +236,6 @@ async function markPaid(id) {
     } catch (error) {
 
         console.error(error);
-
     }
 
 }
@@ -238,7 +275,7 @@ async function updateDashboard() {
     let pending = 0;
     let paid = 0;
     let collected = 0;
-
+    let overdue = 0;
     snapshot.forEach((doc) => {
 
         const invoice = doc.data();
@@ -248,7 +285,9 @@ async function updateDashboard() {
         if (invoice.status === "Pending") {
             pending++;
         }
-
+        if (isOverdue(invoice)) {
+    overdue++;
+        }
         if (invoice.status === "Paid") {
             paid++;
             collected += Number(invoice.amount);
@@ -261,6 +300,7 @@ async function updateDashboard() {
     document.getElementById("paidInvoices").textContent = paid;
     document.getElementById("totalCollected").textContent =
         `KES ${collected.toLocaleString()}`;
+        document.getElementById("overdueInvoices").textContent = overdue;
 
 }
 async function editInvoice(id){
@@ -375,7 +415,7 @@ async function downloadPDF(id) {
 
     const invoice = docSnap.data();
 
-    const invoiceNumber = id.substring(0, 6).toUpperCase();
+    const invoiceNumber = invoice.invoiceNumber;
 
     // Title
     pdf.setFont("helvetica", "bold");
@@ -420,3 +460,10 @@ async function downloadPDF(id) {
     pdf.save(`Invoice-${invoiceNumber}.pdf`);
 }
 window.downloadPDF = downloadPDF;
+logoutBtn.addEventListener("click", async () => {
+
+    await signOut(auth);
+
+    window.location.href = "login.html";
+
+});

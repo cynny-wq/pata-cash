@@ -1,126 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>PataCash</title>
 
     <link rel="stylesheet" href="style.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<header class="header">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
 
-    <div class="logo">
+<body>
 
-        💵 <span>PataCash</span>
+<div class="container">
 
-    </div>
+    <!-- =========================
+         HEADER
+    ========================== -->
 
-    <p class="subtitle">
-        Smart Invoice & Debt Tracker
-    </p>
+    <header class="top-header">
 
-</header>
+        <div class="logo-section">
 
-<section class="stats">
-<div class="dashboard">
+            <img src="images/logo.png"
+                 alt="PataCash Logo"
+                 class="logo">
 
-    <div class="card">
-        <h3>Total Invoices</h3>
-        <h2 id="totalInvoices">0</h2>
-    </div>
+            <div>
 
-    <div class="card">
-        <h3>Pending</h3>
-        <h2 id="pendingInvoices">0</h2>
-    </div>
+                <h1>PataCash</h1>
 
-    <div class="card">
-        <h3>Paid</h3>
-        <h2 id="paidInvoices">0</h2>
-    </div>
+                <p>Smart Invoice & Debt Tracker</p>
 
-    <div class="card">
-        <h3>Collected</h3>
-        <h2 id="totalCollected">KES 0</h2>
-    </div>
+            </div>
+
+        </div>
+
+        <div class="user-section">
+
+            <span id="welcomeUser"></span>
+
+            <button id="logoutBtn">
+                🚪 Logout
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         DASHBOARD
+    ========================== -->
+
+    <section class="dashboard">
+
+        <div class="card total-card">
+            <h3>📄 Total Invoices</h3>
+            <h2 id="totalInvoices">0</h2>
+        </div>
+
+        <div class="card overdue-card">
+            <h3>🔴 Overdue</h3>
+            <h2 id="overdueInvoices">0</h2>
+        </div>
+
+        <div class="card pending-card">
+            <h3>🟡 Pending</h3>
+            <h2 id="pendingInvoices">0</h2>
+        </div>
+
+        <div class="card paid-card">
+            <h3>🟢 Paid</h3>
+            <h2 id="paidInvoices">0</h2>
+        </div>
+
+        <div class="card collected-card">
+            <h3>💰 Total Collected</h3>
+            <h2 id="totalCollected">KES 0</h2>
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         NEW INVOICE
+    ========================== -->
+
+    <section class="invoice-form">
+
+        <h2>Create New Invoice</h2>
+
+        <input
+            type="text"
+            id="customerName"
+            placeholder="Customer Name">
+
+        <input
+            type="text"
+            id="customerPhone"
+            placeholder="254712345678">
+
+        <input
+            type="number"
+            id="invoiceAmount"
+            placeholder="Invoice Amount">
+
+        <input
+            type="date"
+            id="dueDate">
+
+        <button id="saveBtn">
+            Save Invoice
+        </button>
+
+        <button
+            id="updateBtn"
+            style="display:none;">
+            Update Invoice
+        </button>
+
+    </section>
+
+
+    <!-- =========================
+         INVOICE LIST
+    ========================== -->
+
+    <section class="invoice-list">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="🔍 Search invoices...">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Invoice No</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Amount</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="invoiceTable">
+
+                <tr>
+
+                    <td colspan="7"
+                        style="text-align:center;padding:40px;">
+
+                        No invoices yet
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </section>
 
 </div>
-</section>
 
-<section class="invoice-form">
-
-<h2>New Invoice</h2>
-
-<input
-type="text"
-id="customerName"
-placeholder="Customer Name">
-
-<input
-type="text"
-id="customerPhone"
-placeholder="254712345678">
-
-<input
-type="number"
-id="invoiceAmount"
-placeholder="Amount">
-
-<input
-type="date"
-id="dueDate">
-<button id="saveBtn">Save Invoice</button>
-<button id="updateBtn" style="display:none;">Update Invoice</button>
-</section>
-
-<section class="invoice-list">
-
-<input
-type="text"
-id="searchInput"
-placeholder="🔍 Search invoices...">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Customer</th>
-
-<th>Phone</th>
-
-<th>Amount</th>
-
-<th>Due</th>
-
-<th>Status</th>
-
-<th>Actions</th>
-
-</tr>
-
-</thead>
-
-<tbody id="invoiceTable">
-
-<tr>
-
-<td colspan="6" style="text-align:center;padding:40px;">
-No invoices yet
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</section>
-
-</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script type="module" src="auth.js"></script>
 <script type="module" src="app.js"></script>
 
 </body>
